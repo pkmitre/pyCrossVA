@@ -3,13 +3,13 @@
 """
 Module containing Validation class, and Vcheck class and its subclasses
 """
+from abc import ABCMeta, abstractmethod
 
 import pandas as pd
 import numpy as np
 import re
 
-from abc import ABCMeta, abstractmethod
-from utils import report_list
+from pycrossva.utils import report_list
 
 
 class VCheck(metaclass=ABCMeta):

@@ -5,14 +5,14 @@ Defines MapCondition class and its subclasses, each represent a single condition
 that uses a relationship to transform raw data into a boolean column while
 preserving the NA values.
 """
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 import numpy as np
 import pandas as pd
 
-from utils import english_relationship
+from pycrossva.utils import english_relationship
 
 
-class MapCondition(metaclass=ABCMeta):
+class MapCondition(ABC):
     """ Abstract class representing a single mapped condition in the mapping
     data, which gives instructions to transform the raw input data into the
     form needed for a VA instrument. The main configuration class is composed
@@ -115,11 +115,11 @@ class MapCondition(metaclass=ABCMeta):
         Returns:
             Array: returns a boolean array where the condition is met (as float)
 
-        Examples: 
+        Examples:
             >>> test_df = pd.DataFrame({"source_test_str": ["test condition", "test condition 2", np.nan], "source_test_num": [4, 5, np.nan]})
             >>> StrMapCondition({"Condition" : "test condition", "New Column Name" : "test new column name", "Relationship" : "eq", "Prerequisite" : None, "Source Column ID" : "source_test"}).check(test_df)
             array([ 1., 0., nan])
-    
+
             >>> NumMapCondition({"Condition" : 4.5, "New Column Name" : "test new column name", "Relationship" : "ge", "Prerequisite" : None, "Source Column ID" : "source_test"}).check(test_df)
             array([ 0., 1., nan])
         """

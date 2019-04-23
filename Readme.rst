@@ -55,7 +55,7 @@ data.
 
 .. code-block:: python
 
-  from transform import transform
+  from pycrossva.transform import transform
 
   transform(("2016WHOv151", "InterVA4"), "path/to/data.csv")
 
@@ -64,7 +64,7 @@ read in and process the data before calling the function.
 
 .. code-block:: python
 
-  from transform import transform
+  from pycrossva.transform import transform
 
   data = pd.read_csv("path/to/data.csv")
   data = some_special_function(data)

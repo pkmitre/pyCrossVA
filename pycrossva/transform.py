@@ -10,8 +10,8 @@ import os
 import pandas as pd
 import numpy as np
 
-from configuration import Configuration, CrossVA
-from utils import flexible_read
+from pycrossva.configuration import Configuration, CrossVA
+from pycrossva.utils import flexible_read
 
 
 def transform(mapping, raw_data, verbose=2, preserve_na=True,
@@ -165,13 +165,14 @@ def transform(mapping, raw_data, verbose=2, preserve_na=True,
         <BLANKLINE>
          ERRORS
         [!]      1 source column IDs ('-Id10004') were found multiple times in the input data. Each source column ID should only occur once as part of an input data column name. It should be a unique identifier at the end of an input data column name. Source column IDs are case sensitive. Please revise your mapping configuration or your input data so that this condition is satisfied.
-        
+
     """
     mapping_data = pd.DataFrame()
 
     # read in mapping data
     if isinstance(mapping, tuple):  # if mapping is in (input, output) format
-        internal_path = "resources/mapping_configuration_files/"
+        internal_path = os.path.join(os.path.split(
+            __file__)[0], "resources/mapping_configuration_files/")
         if len(mapping) == 2:
             supported_outputs = ["InterVA5", "InterVA4", "InsillicoVA"]
             supported_inputs = ["2016WHOv151", "2016WHOv141", "2012WHO",

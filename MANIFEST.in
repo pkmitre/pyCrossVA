@@ -1,1 +1,4 @@
 include README.rst
+include pycrossva/resources/mapping_configuration_files/*.csv
+include pycrossva/resources/sample_data/*.csv
+include pycrossva/scripts/*.py

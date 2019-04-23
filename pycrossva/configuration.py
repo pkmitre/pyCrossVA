@@ -7,9 +7,9 @@ Structure for Configuration class
 import pandas as pd
 import numpy as np
 
-from mappings import MapCondition
-from utils import report_list
-from validation import Validation, Err, Warn
+from pycrossva.mappings import MapCondition
+from pycrossva.utils import report_list
+from pycrossva.validation import Validation, Err, Warn
 
 
 class Configuration():
