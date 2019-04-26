@@ -13,6 +13,10 @@ import numpy as np
 from pycrossva.configuration import Configuration, CrossVA
 from pycrossva.utils import flexible_read
 
+SUPPORTED_INPUTS = ["2016WHOv151", "2016WHOv141", "2012WHO",
+                    "PHRMCShort"]
+SUPPORTED_OUTPUTS = ["InterVA5", "InterVA4", "InsillicoVA"]
+
 
 def transform(mapping, raw_data, verbose=2, preserve_na=True,
               result_values={"Present": 1, "Absent": 0, "NA": np.nan}):
@@ -174,18 +178,24 @@ def transform(mapping, raw_data, verbose=2, preserve_na=True,
         internal_path = os.path.join(os.path.split(
             __file__)[0], "resources/mapping_configuration_files/")
         if len(mapping) == 2:
-            supported_outputs = ["InterVA5", "InterVA4", "InsillicoVA"]
-            supported_inputs = ["2016WHOv151", "2016WHOv141", "2012WHO",
-                                "PHRMCShort"]
-            if mapping[0] in supported_inputs:
-                if mapping[1] in supported_outputs:
+            if mapping[0] in SUPPORTED_INPUTS:
+                if mapping[1] in SUPPORTED_OUTPUTS:
                     preserve_na = mapping[1] == "InsillicoVA"  # overides given
                     if mapping[1] == "InterVA4":
                         # treat as Insillico w/o NA
                         mapping = (mapping[0], "InsillicoVA")
-                    mapping_data = pd.read_csv((f"{internal_path}"
-                                                f"{mapping[0]}_to_"
-                                                f"{mapping[1]}.csv"))
+
+                    expected_filename = (f"{internal_path}"
+                                         f"{mapping[0]}_to_"
+                                         f"{mapping[1]}.csv")
+                    if os.path.isfile(expected_filename):
+                        mapping_data = pd.read_csv((f"{internal_path}"
+                                                    f"{mapping[0]}_to_"
+                                                    f"{mapping[1]}.csv"))
+                    else:
+                        raise ValueError((f"No mapping supporting {mapping[0]} "
+                                          f"to {mapping[1]} currently exists."))
+
                 else:
                     raise ValueError(("Output not supported. Expected one of "
                                       f"{supported_outputs}, but received "

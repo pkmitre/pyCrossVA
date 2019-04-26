@@ -3,33 +3,31 @@ import click
 from datetime import datetime as dt
 import os
 
-from pycrossva.transform import transform
+from pycrossva.transform import transform, SUPPORTED_INPUTS, SUPPORTED_OUTPUTS
 
 
 @click.command()
 @click.argument("input_type",
                 nargs=1,
-                #prompt="Select the correct type of input data",
-                type=click.Choice(["2016WHOv151", "2016WHOv141",
-                                   "2012WHO", "PHRMCShort"]),
+                type=click.Choice(SUPPORTED_INPUTS),
                 required=True)
 @click.argument('output_type',
                 nargs=1,
-                #prompt="Enter path of input data",
-                type=click.Choice(["InterVA5", "InterVA4", "InsillicoVA"]),
+                type=click.Choice(SUPPORTED_OUTPUTS),
                 required=True)
 @click.argument('src',
                 nargs=-1,
                 type=click.Path(),
-                #prompt="Enter path(s) of input data",
                 required=True)
 @click.option('-d', '--dst', 'dst',
-              #prompt="Specify filepath to save transformed data as csv",
+              help=("Specify destination filepath for transformed data "
+                    "(default is current working directory)"),
               type=click.Path(),
               default=None,
               show_default="current directory",
               required=False)
-@click.option('--silent', '-s', is_flag=True, default=False)
+@click.option('--silent', '-s', is_flag=True, default=False,
+              help="Silence console output")
 # @click.option('--preserve-na/--fill-na', default=False)
 def main(input_type, output_type, src, dst, silent):
     """This is a wrapper for the `transform` python function in the pycrossva
@@ -48,19 +46,21 @@ def main(input_type, output_type, src, dst, silent):
 
     \b
     Args:
-        `input_type` source of the input data
+        `input_type` source type of the input data
         `output_type` format of output data (which algorithm the data should be prepared for)
-        `src` filepath to the input data - can take multiple arguments, seperated by a space
+        `src` filepath to the input data - can take multiple arguments, separated by a space
 
     \b
     Examples:
-        $ pycrossva-transform 2012WHO InterVA4 path/to/mydata.csv
-        2012WHO 'path/to/my/data.csv' data prepared for InterVA4 and written to csv at 'my/current/directory/InterVA4_from_mydata_042319.csv')
+            $ pycrossva-transform 2012WHO InterVA4 path/to/mydata.csv
+            2012WHO 'path/to/my/data.csv' data prepared for InterVA4 and written to csv at 'my/current/directory/InterVA4_from_mydata_042319.csv'
 
+        \b
         $ pycrossva-transform 2012WHO InterVA4 path/to/mydata1.csv path/to/another/data2.csv --dst outputfolder
         2012WHO 'path/to/mydata1.csv' data prepared for InterVA4 and written to csv at 'outputfolder/InterVA4_from_mydata1_042319.csv'
         2012WHO 'path/to/another/data2.csv' data prepared for InterVA4 and written to csv at 'outputfolder/InterVA4_from_data2_042319.csv'
 
+        \b
         $ pycrossva-transform 2012WHO InterVA4 path/to/mydata1.csv path/to/another/data2.csv --dst outputfolder/results.csv
         2012WHO 'path/to/mydata1.csv' data prepared for InterVA4 and written to csv at 'outputfolder/results_1.csv'
         2012WHO 'path/to/another/data2.csv' data prepared for InterVA4 and written to csv at 'outputfolder/results_2.csv'
@@ -93,8 +93,9 @@ def main(input_type, output_type, src, dst, silent):
 
         if result is not None:
             result.to_csv(final_dst)
-            click.echo(
-                f"{input_type} '{input_data}' data prepared for {output_type} and written to csv at '{final_dst}'")
+            if not silent:
+                click.echo(
+                    f"{input_type} '{input_data}' data prepared for {output_type} and written to csv at '{final_dst}'")
 
 
 if __name__ == '__main__':

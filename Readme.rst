@@ -45,12 +45,12 @@ Project Status
 
 This package is a fleshed out prototype of the framework MTIRE is
 proposing for the open source CrossVA project going forward. This is an
-alpha version (as of April 8, 2019) intended to demonstrate full concept
-and flexibility, not for use in research or verbal autopsy evaluations.
+alpha version (as of April 26, 2019) intended to demonstrate full concept
+and flexibility.
 
 
-Simple Usage
-------------
+Simple Usage - Python
+---------------------
 
 The simplest way to get started with CrossVA is to invoke the ``transform`` function
 with a default mapping, and the path to a csv containing your raw verbal autopsy
@@ -69,19 +69,53 @@ read in and process the data before calling the function.
 
   from pycrossva.transform import transform
 
-  data = pd.read_csv("path/to/data.csv")
-  data = some_special_function(data)
-  transform(("2016WHOv151", "InterVA4"), data)
+  input_data = pd.read_csv("path/to/data.csv")
+  input_data = some_special_function(input_data)
+  final_data = transform(("2016WHOv151", "InterVA4"), input_data)
 
-There are more details available in `transform function`_
+The transform function returns a Pandas DataFrame object. To write the Pandas DataFrame
+to a csv, you can do:
+
+.. code-block:: python
+
+  final_data.to_csv("filename.csv")
 
 Command Line
 ------------
 
-`pycrossva` also contains a command line tool that allows users to invoke the main
-transform function on one or more files from the command line, without having
-to use the `Python` interpreter or write a `Python` script.
+`pycrossva` also contains a command line tool, `pycrossva-transform` that acts as
+a wrapper for the `transform` python function in the pycrossva
+package. Once you have installed pycrossva, you can run this from the command
+line in order to process verbal autopsy data without having to touch python code.
+If you have multiple input files to process from the same input type (or source format) to the same
+output type (or algorithm), you can run them all in a single command.
 
+If no destination (--dst) is specified, the default behavior will be to write
+the resulting data to a csv in the current working directory with a name in
+the pattern of "output_type_from_src_mmddyy", where mmddyy is the current
+date. If `dst` is a directory, then the result file will still have the
+default name. If `dst` ends in '.csv' but multiple input files are given,
+then the output files will be written to dst_1.csv, dst_2.csv, etc.
+
+`pycrossva-transform` takes 3 positional arguments:
+  *  `input_type`: source type of the input data
+  *  `output_type`: format of output data (which algorithm the data should be prepared for)
+  *  `src`: filepath to the input data - can take multiple arguments, separated by a space
+
+Examples:
+
+.. code-block:: bash
+
+    $ pycrossva-transform 2012WHO InterVA4 path/to/mydata.csv
+    2012WHO 'path/to/my/data.csv' data prepared for InterVA4 and written to csv at 'my/current/directory/InterVA4_from_mydata_042319.csv'
+
+    $ pycrossva-transform 2012WHO InterVA4 path/to/mydata1.csv path/to/another/data2.csv --dst outputfolder
+    2012WHO 'path/to/mydata1.csv' data prepared for InterVA4 and written to csv at 'outputfolder/InterVA4_from_mydata1_042319.csv'
+    2012WHO 'path/to/another/data2.csv' data prepared for InterVA4 and written to csv at 'outputfolder/InterVA4_from_data2_042319.csv'
+
+    $ pycrossva-transform 2012WHO InterVA4 path/to/mydata1.csv path/to/another/data2.csv --dst outputfolder/results.csv
+    2012WHO 'path/to/mydata1.csv' data prepared for InterVA4 and written to csv at 'outputfolder/results_1.csv'
+    2012WHO 'path/to/another/data2.csv' data prepared for InterVA4 and written to csv at 'outputfolder/results_2.csv'
 
 
 
