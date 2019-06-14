@@ -1,6 +1,23 @@
 .. image:: https://travis-ci.org/verbal-autopsy-software/pyCrossVA.svg?branch=master
     :target: https://travis-ci.org/verbal-autopsy-software/pyCrossVA
 
+Experimental RESTful Interface
+------------------------------
+
+This branch of the pyCrossVA package implements an experimental RESTful interface that allows the format transformation service to be accessed via a simple API endpoint.
+
+To install the modified package::
+
+  python3 setup.py install
+
+To start the interface::
+
+  FLASK_ENV=development FLASK_APP=api.py flask run -p5001
+
+To test the API manually::
+
+  curl -X POST -H 'Content-Type: text/csv' --data-binary @who2016-example-request-1.csv 'localhost:5001/transform?input=2016WHOv151&output=InterVA5'
+
 Background
 ----------
 
