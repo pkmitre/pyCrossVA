@@ -6,6 +6,11 @@ Experimental RESTful Interface
 
 This branch of the pyCrossVA package implements an experimental RESTful interface that allows the format transformation service to be accessed via a simple API endpoint.
 
+The interface can be run locally via docker:
+
+  docker build -t pycrossva .
+  docker run -p5001:80 pycrossva
+
 To install the modified package::
 
   python3 setup.py install

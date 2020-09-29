@@ -12,5 +12,5 @@ setup(name='pycrossva',
                     ''',
       include_package_data=True,
       keywords="verbal autopsy data preparation",
-      install_requires=['numpy', 'pandas', 'Click'],
+      install_requires=['numpy', 'pandas', 'Click', 'flask'],
       zip_safe=False)
