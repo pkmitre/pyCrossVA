@@ -18,7 +18,7 @@ setup(name='pycrossva',
           'pycrossva': ['resources/mapping/*', 'resources/sample_data/*'],
       },
       keywords="verbal autopsy data preparation",
-      install_requires=['numpy', 'pandas', 'Click'],
+      install_requires=['numpy', 'pandas', 'Click', 'flask'],
       classifiers=[
           "Programming Language :: Python :: 3",
           "Programming Language :: Python :: 3.7",
