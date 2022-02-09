@@ -104,8 +104,11 @@ def flexible_read(path_or_df):
         return_df = pd.DataFrame(path_or_df)
     return return_df
 
-def detect_format(output_format, data):
-    """Detects the format of the input data, determining the closest match
+    
+    
+def detect_format(output_format, data, threshold=.25, prnt=False):
+    """Detects the format of the input data, determining the closest match with a proportion of overlap is
+     above threshold (default .25). If no formats overlap more than the threshold, return None.
 
     Args:
         output_format (string): The output format, needed for loading the configuration files to test each
@@ -127,7 +130,8 @@ def detect_format(output_format, data):
     from pycrossva.transform import SUPPORTED_INPUTS
     from pycrossva.configuration import Configuration, CrossVA
 
-    config_file_path = os.path.join(os.path.split(__file__)[0], "resources/mapping_configuration_files/")
+    #config_file_path = os.path.join(os.path.split(__file__)[0], "resources/mapping_configuration_files/")
+    config_file_path = "resources/mapping_configuration_files/"
 
     proportions = {}
 
@@ -145,10 +149,18 @@ def detect_format(output_format, data):
             data_column_ids = data.columns
 
             # Find the proportion of the column IDs that are mapped
-            proportions[input_format] = len(mapped_data_column_ids) / len(data_column_ids)
+            proportion = len(mapped_data_column_ids) / len(data_column_ids)
+
+            # only consider matches above threshold
+            if proportion >= threshold:
+                proportions[input_format] = proportion
+            
+            if prnt:
+                print(f"{input_format} overlap: {proportion}")
 
     # Return the supported input that has the highest proportion
-    return max(proportions, key=proportions.get)
+    if len(proportions) > 0:
+        return max(proportions, key=proportions.get)
 
 def english_relationship(rel):
     """Returns abbreviated relationship as full english phrase.
