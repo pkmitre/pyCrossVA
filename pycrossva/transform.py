@@ -212,11 +212,11 @@ def transform(mapping, raw_data, raw_data_id=None, verbose=2, preserve_na=True,
 
                 else:
                     raise ValueError(("Output not supported. Expected one of "
-                                      f"{supported_outputs}, but received "
+                                      f"{SUPPORTED_OUTPUTS}, but received "
                                       f"'{mapping[1]}'"))
             else:
                 raise ValueError(("Input not supported. Expected one of "
-                                  f"{supported_inputs}, but received "
+                                  f"{SUPPORTED_INPUTS}, but received "
                                   f"'{mapping[0]}'"))
         else:
             raise ValueError(("If mapping is tuple, input should be of length "
