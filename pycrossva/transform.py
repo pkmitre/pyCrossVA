@@ -15,7 +15,7 @@ from pycrossva.utils import flexible_read
 
 SUPPORTED_INPUTS = ["2016WHOv151", "2016WHOv141", "2012WHO",
                     "2021WHO", "PHRMCShort", "2021WHO"]
-SUPPORTED_OUTPUTS = ["InterVA5", "InterVA4", "InsillicoVA"]
+SUPPORTED_OUTPUTS = ["InterVA5", "InsillicoVA"]
 
 
 def transform(mapping, raw_data, raw_data_id=None, verbose=2, preserve_na=True,
