@@ -1,5 +1,5 @@
-.. image:: https://travis-ci.org/verbal-autopsy-software/pyCrossVA.svg?branch=master
-    :target: https://travis-ci.org/verbal-autopsy-software/pyCrossVA
+.. image:: https://travis-ci.com/verbal-autopsy-software/pyCrossVA.svg?branch=master
+    :target: https://travis-ci.com/verbal-autopsy-software/pyCrossVA
 
 Experimental RESTful Interface
 ------------------------------
@@ -165,6 +165,7 @@ Currently Supported
 Inputs
 ^^^^^^^
 
+* 2021 WHO Questionnaire from ODK export
 * 2016 WHO Questionnaire from ODK export, v1.5.1
 * 2016 WHO Questionnaire from ODK export, v1.4.1
 * 2012 WHO Questionnaire from ODK export

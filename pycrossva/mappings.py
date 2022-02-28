@@ -254,7 +254,8 @@ class MapCondition(ABC):
                           str(self.condition)]
         report_as = " ".join(report_as_list)
 
-        if not self.preq_column is "":
+        #if not self.preq_column is "":
+        if self.preq_column != "":
             return (report_as + " and the new column " +
                     str(self.preq_column) + " is true.")
         return report_as
