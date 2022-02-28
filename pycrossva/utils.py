@@ -111,7 +111,7 @@ def detect_format(output_format, data, threshold=.25, prnt=False):
      above threshold (default .25). If no formats overlap more than the threshold, return None.
 
     Args:
-        output_format (string): The output format, needed for loading the configuration files to test each
+        output_format (string): The output format, needed for loading the configuration files to test each.  Can also take a value of 'all' which tests everything.
         data (Pandas DataFrame): The data being processed where we wish to determine the most likely format
 
     Returns:
@@ -127,7 +127,7 @@ def detect_format(output_format, data, threshold=.25, prnt=False):
     # the proportion of inputs that are present in the input data and
     # choose the best match (the one with the highest proportion)
 
-    from pycrossva.transform import SUPPORTED_INPUTS
+    from pycrossva.transform import SUPPORTED_INPUTS, SUPPORTED_OUTPUTS
     from pycrossva.configuration import Configuration, CrossVA
 
     #config_file_path = os.path.join(os.path.split(__file__)[0], "resources/mapping_configuration_files/")
@@ -136,6 +136,8 @@ def detect_format(output_format, data, threshold=.25, prnt=False):
     proportions = {}
 
     for input_format in SUPPORTED_INPUTS:
+        if output_format == "all":
+            output_format = SUPPORTED_OUTPUTS
         translation_file = (f"{config_file_path}{input_format}_to_{output_format}.csv")
         if os.path.isfile(translation_file):
 
