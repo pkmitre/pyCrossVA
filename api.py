@@ -33,9 +33,19 @@ def detect_format_route():
   csv = request.data.decode("utf-8")
   data = pd.read_csv(StringIO(csv))
 
-  # Run the transform and return the result in CSV
-  # since the api gets run in the main folder, we need to replace the default filepath to be one level lower
-  input_type = detect_format("all", data, config_file_path = "pycrossva/resources/mapping_configuration_files/")
+  # Read the threshold input parameter (if specified)
+  threshold = request.args.get('threshold')
+
+  if threshold == None:
+    # since the api gets run in the main folder, we need to replace the default filepath to be one level lower
+    input_type = detect_format("all", data, config_file_path = "pycrossva/resources/mapping_configuration_files/")  
+  else:
+    threshold_n = float(threshold) #convert to numeric
+
+
+    # since the api gets run in the main folder, we need to replace the default filepath to be one level lower
+    input_type = detect_format("all", data, config_file_path = "pycrossva/resources/mapping_configuration_files/", threshold=threshold_n)
+  
 
   if input_type == None:
     input_type = "Error: No Match"
