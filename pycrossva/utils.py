@@ -106,7 +106,7 @@ def flexible_read(path_or_df):
 
     
     
-def detect_format(output_format, data, threshold=.25, prnt=False):
+def detect_format(output_format, data, threshold=.25, prnt=False, config_file_path = "resources/mapping_configuration_files/"):
     """Detects the format of the input data, determining the closest match with a proportion of overlap is
      above threshold (default .25). If no formats overlap more than the threshold, return None.
 
@@ -131,15 +131,27 @@ def detect_format(output_format, data, threshold=.25, prnt=False):
     from pycrossva.configuration import Configuration, CrossVA
 
     #config_file_path = os.path.join(os.path.split(__file__)[0], "resources/mapping_configuration_files/")
-    config_file_path = "resources/mapping_configuration_files/"
 
     proportions = {}
 
-    for input_format in SUPPORTED_INPUTS:
-        if output_format == "all":
-            output_format = SUPPORTED_OUTPUTS
-        translation_file = (f"{config_file_path}{input_format}_to_{output_format}.csv")
+    # if you are not specifying an output format, use all possible translation filepaths
+    if output_format == "all":
+        translations = [(f"{config_file_path}{x}_to_{y}.csv") for x in SUPPORTED_INPUTS for y in SUPPORTED_OUTPUTS]
+    else:
+        translations = [(f"{config_file_path}{x}_to_{output_format}.csv") for x in SUPPORTED_INPUTS]
+
+    print(os.getcwd())
+
+    for translation_file in translations:
+    
+        # extract out the output type from the translation filepath
+        input_format = re.sub(config_file_path, "", translation_file)
+        input_format = re.sub("_.*$", "", input_format)
+    
+        # if the translation file exists
         if os.path.isfile(translation_file):
+
+            print("yes")
 
             # Get a list of the column IDs of the data file that are in the mapping file
             mapping_data = pd.read_csv(translation_file)
@@ -159,6 +171,7 @@ def detect_format(output_format, data, threshold=.25, prnt=False):
             
             if prnt:
                 print(f"{input_format} overlap: {proportion}")
+
 
     # Return the supported input that has the highest proportion
     if len(proportions) > 0:
