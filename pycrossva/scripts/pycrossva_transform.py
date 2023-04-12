@@ -19,6 +19,10 @@ from pycrossva.transform import transform, SUPPORTED_INPUTS, SUPPORTED_OUTPUTS
                 nargs=-1,
                 type=click.Path(),
                 required=True)
+@click.option("--column_id",
+              help=("column name in the data file that contains the "
+                    "unique ID for each death"),
+              required=False)
 @click.option('-d', '--dst', 'dst',
               help=("Specify destination filepath for transformed data "
                     "(default is current working directory)"),
@@ -29,7 +33,7 @@ from pycrossva.transform import transform, SUPPORTED_INPUTS, SUPPORTED_OUTPUTS
 @click.option('--silent', '-s', is_flag=True, default=False,
               help="Silence console output")
 # @click.option('--preserve-na/--fill-na', default=False)
-def main(input_type, output_type, src, dst, silent):
+def main(input_type, output_type, src, column_id, dst, silent):
     """This is a wrapper for the `transform` python function in the pycrossva
     package so that it can be run from the command line. Once you have installed
     pycrossva, you can run this from the command line in order to process
@@ -78,13 +82,13 @@ def main(input_type, output_type, src, dst, silent):
         if input_type == "AUTODETECT":
             input_type = detect_format(output_type, input_data)
             click.echo(f"Detected input type: {input_type}")
-
         result = transform((input_type, output_type), input_data,
+                           raw_data_id=column_id,
                            verbose=verbosity)
         original_name = input_file.split(os.path.sep)[-1].split(".")[0]
         default_name = "_".join([output_type, "from", original_name,
                                  dt.today().strftime("%m%d%y")]) + ".csv"
-        if not dst is None:  # if dst is given
+        if dst is not None:  # if dst is given
             # and it's a filename w/ entries
             if dst[-4:] == ".csv":
                 final_dst = dst
@@ -100,7 +104,7 @@ def main(input_type, output_type, src, dst, silent):
             final_dst = dst + "_" + str(i + 1)
 
         if result is not None:
-            result.to_csv(final_dst)
+            result.to_csv(final_dst, index=False)
             if not silent:
                 click.echo(
                     f"{input_type} '{input_file}' data prepared for {output_type} and written to csv at '{final_dst}'")

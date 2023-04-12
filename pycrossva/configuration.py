@@ -16,7 +16,7 @@ class Configuration():
     """ Configuration class details the relationship between a set of input
     data and output data. It is composed of MapConditions that
     transform an input data source (2012 WHO, 2016 WHO 141, 2016 WHO 151,
-    PHRMC SHORT) into a different data form (PHRMC SHORT, InsillicoVA,
+    PHRMC SHORT) into a different data form (PHRMC SHORT, InSilicoVA,
     InterVA4, InterVA5, or Tarrif2) for verbal autopsy.
 
     Attributes:
@@ -509,9 +509,18 @@ class CrossVA():
         if self.validation.is_valid():
             # add missing columns as NA
             self.data = self.data.reindex(columns=self.mapping.source_columns)
+            # for mapping_condition in self.mapping.list_conditions():
+            #     self.prepared_data[mapping_condition.source_dtype] = \
+            #         mapping_condition.prepare_data(self.data)
+            # get rid of: "PerformanceWarning: DataFrame is highly fragmented."
+            dict_of_cols = {}
             for mapping_condition in self.mapping.list_conditions():
-                self.prepared_data[mapping_condition.source_dtype] = \
+                dict_of_cols[mapping_condition.source_dtype] = \
                     mapping_condition.prepare_data(self.data)
+            self.prepared_data = pd.concat([self.prepared_data,
+                                            pd.DataFrame(
+                                                dict_of_cols)],
+                                           axis=1)
 
         self.validation.report(verbose)
         return self.validation.is_valid()

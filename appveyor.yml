@@ -1,0 +1,30 @@
+image: ubuntu2004
+
+environment:
+  matrix:
+  - TOXENV: py36
+    PYTHON: "3.6"
+  - TOXENV: py37
+    PYTHON: "3.7"
+  - TOXENV: py38
+    PYTHON: "3.8"
+  - TOXENV: py39
+    PYTHON: "3.9"
+
+stack: python $PYTHON
+
+install:
+- pip install tox
+
+test_script:
+- tox
+
+build: off
+
+skip_commits:
+  files:
+  - docs/*
+  - Readme.rst
+  - LICENSE
+  - MANIFEST.in
+  - .gitignore

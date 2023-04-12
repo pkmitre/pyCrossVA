@@ -1,52 +1,12 @@
-.. image:: https://travis-ci.org/verbal-autopsy-software/pyCrossVA.svg?branch=master
-    :target: https://travis-ci.org/verbal-autopsy-software/pyCrossVA
+pyCrossVA
+=========
 
-Background
-----------
-
-About Verbal Autopsy
-^^^^^^^^^^^^^^^^^^^^
-
-From `Wikipedia <https://en.wikipedia.org/wiki/Verbal_autopsy>`_:
-
-  A verbal autopsy (VA) is a method of gathering health information about a deceased
-  individual to determine his or her cause of death. Health information and a
-  description of events prior to death are acquired from conversations or
-  interviews with a person or persons familiar with the deceased and analyzed by
-  health professional or computer algorithms to assign a probable cause of death.
-
-  Verbal autopsy is used in settings where most deaths are undocumented. Estimates
-  suggest a majority of the 60 million annual global deaths occur without medical
-  attention or official medical certification of the cause of death. The VA method
-  attempts to establish causes of death for previously undocumented subjects,
-  allowing scientists to analyze disease patterns and direct public health policy
-  decisions.
-
-  Noteworthy uses of the verbal autopsy method include the Million Death Study in
-  India, China's national program to document causes of death in rural areas, and
-  the Global Burden of Disease Study 2010.
-
-CrossVA
-^^^^^^^^
-
-CrossVA is a python package for transforming verbal autopsy data collected using
-the 2016 WHO VA instrument (v1.5.1, or v1.4.1), 2012 WHO VA instrument, and
-the PHRMC short questionnaire into a format suitable for openVA.
-
-The flagship function of this package is the transform() function, which
-prepares raw data for use in a verbal autopsy algorithm. The user can either
-choose to use a default mapping, or create a custom one of their own design. The
-default mappings are listed in `Currently Supported`_ and can be invoked by
-passing in a tuple as the mapping argument in ``("input", "output")`` format.
-
-
-Project Status
-^^^^^^^^^^^^^^
-
-This package is a fleshed out prototype of the framework MTIRE is
-proposing for the open source CrossVA project going forward. This is an
-alpha version (as of April 26, 2019) intended to demonstrate full concept
-and flexibility.
+.. image:: https://img.shields.io/pypi/pyversions/pycrossva
+    :target: https://pypi.org/project/pycrossva
+.. image:: http://readthedocs.org/projects/pycrossva/badge/
+    :target: http://pycrossva.readthedocs.io/
+.. image:: https://ci.appveyor.com/api/projects/status/d1b842ik4c95x47h?svg=true
+    :target: https://ci.appveyor.com/project/jarathomas/pycrossva
 
 
 Simple Usage - Python
@@ -79,6 +39,17 @@ to a csv, you can do:
 .. code-block:: python
 
   final_data.to_csv("filename.csv")
+
+pyCrossVA is a python package for transforming verbal autopsy data collected using
+the 2016 WHO VA instrument (v1.5.1, or v1.4.1), 2012 WHO VA instrument, and
+the PHRMC short questionnaire into a format suitable for openVA.
+
+The flagship function of this package is the transform() function, which
+prepares raw data for use in a verbal autopsy algorithm. The user can either
+choose to use a default mapping, or create a custom one of their own design. The
+default mappings are listed in `Currently Supported`_ and can be invoked by
+passing in a tuple as the mapping argument in ``("input", "output")`` format.
+
 
 Command Line
 ------------
@@ -143,6 +114,7 @@ Currently Supported
 Inputs
 ^^^^^^^
 
+* 2021 WHO Questionnaire from ODK export
 * 2016 WHO Questionnaire from ODK export, v1.5.1
 * 2016 WHO Questionnaire from ODK export, v1.4.1
 * 2012 WHO Questionnaire from ODK export
@@ -151,7 +123,7 @@ Inputs
 Outputs
 ^^^^^^^^
 
-* InSillicoVA
+* InSilicoVA
 * InterVA4
 * InterVA5
 
@@ -165,7 +137,7 @@ Expanding outputs
 
 One component of moving to a production version will be to offer additional
 mapping files to support more output formats. The package currently supports
-mapping to the InterVA4 and InsillicoVA format.
+mapping to the InterVA4 and InSilicoVA format.
 
 The following is a list of
 additional outputs for other algorithms to be supported in future versions:
@@ -178,6 +150,32 @@ Style
 
 This package was written using google style guide for Python and PEP8 standards.
 Tests have been written using doctest.
+
+Background
+----------
+
+About Verbal Autopsy
+^^^^^^^^^^^^^^^^^^^^
+
+From `Wikipedia <https://en.wikipedia.org/wiki/Verbal_autopsy>`_:
+
+  A verbal autopsy (VA) is a method of gathering health information about a deceased
+  individual to determine his or her cause of death. Health information and a
+  description of events prior to death are acquired from conversations or
+  interviews with a person or persons familiar with the deceased and analyzed by
+  health professional or computer algorithms to assign a probable cause of death.
+
+  Verbal autopsy is used in settings where most deaths are undocumented. Estimates
+  suggest a majority of the 60 million annual global deaths occur without medical
+  attention or official medical certification of the cause of death. The VA method
+  attempts to establish causes of death for previously undocumented subjects,
+  allowing scientists to analyze disease patterns and direct public health policy
+  decisions.
+
+  Noteworthy uses of the verbal autopsy method include the Million Death Study in
+  India, China's national program to document causes of death in rural areas, and
+  the Global Burden of Disease Study 2010.
+
 
 License
 --------

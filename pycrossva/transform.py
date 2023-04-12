@@ -14,12 +14,12 @@ from pycrossva.configuration import Configuration, CrossVA
 from pycrossva.utils import flexible_read
 
 SUPPORTED_INPUTS = ["2016WHOv151", "2016WHOv141", "2012WHO",
-                    "PHRMCShort"]
-SUPPORTED_OUTPUTS = ["InterVA5", "InterVA4", "InsillicoVA"]
+                    "2021WHO", "PHRMCShort"]
+SUPPORTED_OUTPUTS = ["InterVA5", "InterVA4", "InSilicoVA"]
 
 
-def transform(mapping, raw_data, verbose=2, preserve_na=True,
-              result_values={"Present": 1, "Absent": 0, "NA": np.nan}):
+def transform(mapping, raw_data, raw_data_id=None, verbose=2, preserve_na=True,
+              result_values={"Present": "y", "Absent": "n", "NA": "."}):
     """transforms raw VA data (`raw_data`) into data suitable for use with a VA
     algorithm, according to the specified transformations given in `mapping`.
 
@@ -29,11 +29,12 @@ def transform(mapping, raw_data, verbose=2, preserve_na=True,
             data file, or a Pandas DataFrame containing configuration data
         raw_data (string or Pandas DataFrame): raw verbal autopsy data to
             process
+        raw_data_id (string): column name with record ID
         verbose (int): integer from 0 to 5, controlling how much status detail
             is printed to console. Silent if 0. Defaults to 2, which will print
             only errors and warnings.
         preserve_na (bool): whether to preserve NAs in data, or to count them
-            as FALSE. Overridden with True for InsillicoVA, False for InterVA4
+            as FALSE. Overridden with True for InSilicoVA, False for InterVA4
             when mapping is given as a tuple. Defaults to TRUE, which allows
             NA values to perpetuate through the data.
         result_values (dict): available as a simple customization option if
@@ -42,8 +43,8 @@ def transform(mapping, raw_data, verbose=2, preserve_na=True,
 
     Returns:
         Pandas DataFrame: the raw data transformed according to specifications
-        given in mapping data. Default values are 1 where symptom is present,
-        0 where symptom is absent, and if NAs are preserved, they are represented
+        given in mapping data. Default values are y where symptom is present,
+        n where symptom is absent, and if . are preserved, they are represented
         in the data as NaNs. If NAs are not preserved, they are considered to be
         false / absent / 0.
 
@@ -53,23 +54,23 @@ def transform(mapping, raw_data, verbose=2, preserve_na=True,
 
         >>> transform(("2016WHOv151", "InterVA4"), "resources/sample_data/2016WHO_mock_data_1.csv").loc[range(5),["ACUTE","CHRONIC","TUBER"]]
            ACUTE  CHRONIC  TUBER
-        0    1.0      0.0    0.0
-        1    1.0      0.0    0.0
-        2    0.0      1.0    0.0
-        3    0.0      1.0    0.0
-        4    1.0      0.0    0.0
+        0      y        n      .
+        1      y        n      .
+        2      n        y      .
+        3      n        y      .
+        4      y        n      .
 
         You can also give the data and mapping as Pandas DataFrames:
 
         >>> my_special_data = pd.read_csv("resources/sample_data/2016WHO_mock_data_1.csv")
-        >>> my_special_mapping = pd.read_csv("resources/mapping_configuration_files/2016WHOv151_to_InsillicoVA.csv")
+        >>> my_special_mapping = pd.read_csv("resources/mapping_configuration_files/2016WHOv151_to_InSilicoVA.csv")
         >>> transform(my_special_mapping, my_special_data).loc[range(5),["ACUTE","CHRONIC","TUBER"]]
            ACUTE  CHRONIC  TUBER
-        0    1.0      0.0    NaN
-        1    1.0      0.0    NaN
-        2    0.0      1.0    NaN
-        3    0.0      1.0    NaN
-        4    1.0      0.0    NaN
+        0      y        n      .
+        1      y        n      .
+        2      n        y      .
+        3      n        y      .
+        4      y        n      .
 
         Note that by default, `preserve_na` is `True` and NA values will be
         left in. If `preserve_na` is `False`, or if the algorithm does not
@@ -97,7 +98,7 @@ def transform(mapping, raw_data, verbose=2, preserve_na=True,
         represented in the data. If source columns are missing in the source data,
         then those columns will be created and filled with NA values.
 
-        >>> transform(("2016WHOv151", "InsillicoVA"), "resources/sample_data/2016WHO_mock_data_2.csv").loc[range(5),["ACUTE","FEMALE","MARRIED"]]
+        >>> transform(("2016WHOv151", "InSilicoVA"), "resources/sample_data/2016WHO_mock_data_2.csv").loc[range(5),["ACUTE","FEMALE","MARRIED"]]
         Validating Mapping-Data Relationship . . .
         <BLANKLINE>
          WARNINGS
@@ -106,11 +107,11 @@ def transform(mapping, raw_data, verbose=2, preserve_na=True,
         [?]          '-Id10059' is missing, which affects the creation of  column(s) 'MARRIED'
         [?]          '-ageInDaysNeonate' is missing, which affects the creation of  column(s) 'DIED_D1', 'DIED_D23', 'DIED_D36', 'DIED_W1', and 'NEONATE'
            ACUTE  FEMALE  MARRIED
-        0    1.0     NaN      NaN
-        1    1.0     NaN      NaN
-        2    1.0     NaN      NaN
-        3    1.0     NaN      NaN
-        4    1.0     NaN      NaN
+        0      y       .        .
+        1      y       .        .
+        2      y       .        .
+        3      y       .        .
+        4      y       .        .
 
         `transform` will also accept mapping configurations with missing values,
         with new columns that are specified but missing source columns.
@@ -160,12 +161,12 @@ def transform(mapping, raw_data, verbose=2, preserve_na=True,
         [?] 	 'child_4_7a' is missing, which affects the creation of  column(s) 'i183o'
         [?] 	 'child_5_1' is missing, which affects the creation of  column(s) 'i418o'
         [?] 	 'child_6_2' is missing, which affects the creation of  column(s) 'i130o'
-           i004a  i004b  i019a  i019b  i022a
-        0    NaN    NaN    1.0    0.0    0.0
-        1    NaN    NaN    0.0    0.0    0.0
-        2    NaN    NaN    0.0    0.0    0.0
-        3    NaN    NaN    1.0    0.0    0.0
-        4    NaN    NaN    0.0    0.0    0.0
+           ID  i004a  i004b  i019a  i019b
+        0   1      .      .      y      n
+        1   2      .      .      n      n
+        2   3      .      .      n      n
+        3   4      .      .      y      n
+        4   5      .      .      n      n
 
         However, the mapping-data relationship must be valid. For example, if
         the source column IDs are not unique for the input data - that is,
@@ -177,7 +178,7 @@ def transform(mapping, raw_data, verbose=2, preserve_na=True,
         CrossVA cannot tell which column should be used, so validation fails.
 
         >>> bad_data = pd.read_csv("resources/sample_data/2016WHO_bad_data_1.csv")
-        >>> transform(("2016WHOv151", "InsillicoVA"), bad_data)
+        >>> transform(("2016WHOv151", "InSilicoVA"), bad_data)
         Validating Mapping-Data Relationship . . .
         <BLANKLINE>
          ERRORS
@@ -193,10 +194,10 @@ def transform(mapping, raw_data, verbose=2, preserve_na=True,
         if len(mapping) == 2:
             if mapping[0] in SUPPORTED_INPUTS:
                 if mapping[1] in SUPPORTED_OUTPUTS:
-                    preserve_na = mapping[1] == "InsillicoVA"  # overides given
+                    preserve_na = mapping[1] == "InSilicoVA"  # overides given
                     if mapping[1] == "InterVA4":
                         # treat as Insillico w/o NA
-                        mapping = (mapping[0], "InsillicoVA")
+                        mapping = (mapping[0], "InSilicoVA")
 
                     expected_filename = (f"{internal_path}"
                                          f"{mapping[0]}_to_"
@@ -215,7 +216,7 @@ def transform(mapping, raw_data, verbose=2, preserve_na=True,
                                       f"'{mapping[1]}'"))
             else:
                 raise ValueError(("Input not supported. Expected one of "
-                                  f"{supported_inputs}, but received "
+                                  f"{SUPPORTED_INPUTS}, but received "
                                   f"'{mapping[0]}'"))
         else:
             raise ValueError(("If mapping is tuple, input should be of length "
@@ -258,6 +259,19 @@ def transform(mapping, raw_data, verbose=2, preserve_na=True,
         actual_mapping = {value: result_values[key] for key,
                           value in defaults.items()}
         final_data = final_data.replace(actual_mapping)
+    if raw_data_id is not None:
+        try:
+            final_data.insert(loc=0,
+                              column="ID",
+                              value=input_data[raw_data_id])
+        except KeyError:
+            raise ValueError((f"Could not find column named {raw_data_id} "
+                              "in raw_data."))
+    else:
+        final_data.reset_index(inplace=True)
+        final_data.rename(columns={"index": "ID"}, inplace=True)
+        final_data["ID"] = final_data["ID"] + 1
+
 
     if preserve_na:
         return final_data

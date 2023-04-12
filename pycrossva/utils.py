@@ -116,7 +116,7 @@ def detect_format(output_format, data):
 
     Examples:
     Can determine the format of a data file:
-    >>> detect_format("InsillicoVA", flexible_read("resources/sample_data/2016WHO_mock_data_1.csv"))
+    >>> detect_format("InSilicoVA", flexible_read("resources/sample_data/2016WHO_mock_data_1.csv"))
     '2016WHOv141'
     """
 
