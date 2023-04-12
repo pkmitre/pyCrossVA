@@ -80,8 +80,15 @@ def main(input_type, output_type, src, column_id, dst, silent):
         from pycrossva.utils import flexible_read, detect_format
         input_data = flexible_read(input_file)
         if input_type == "AUTODETECT":
-            input_type = detect_format(output_type, input_data)
+            input_type = detect_format(output_type, input_data, prnt=True)
             click.echo(f"Detected input type: {input_type}")
+
+        if input_type == None:
+                raise Exception(
+                    "You selected to autodetect the input format, but the \
+                    autodetection failed. Please check your inputs and try again."
+                )
+
         result = transform((input_type, output_type), input_data,
                            raw_data_id=column_id,
                            verbose=verbosity)

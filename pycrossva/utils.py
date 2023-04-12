@@ -8,7 +8,6 @@ import re
 import os
 
 import pandas as pd
-import numpy as np
 
 def report_list(alist, limit=10, paren=True):
     """Converts alist into a user-friendly string for clearer error messages.
@@ -104,44 +103,67 @@ def flexible_read(path_or_df):
         return_df = pd.DataFrame(path_or_df)
     return return_df
 
-    
-    
-def detect_format(output_format, data, threshold=.25, prnt=False):
-    """Detects the format of the input data, determining the closest match with a proportion of overlap is
-     above threshold (default .25). If no formats overlap more than the threshold, return None.
+
+def detect_format(
+    output_format,
+    data,
+    threshold=.25,
+    prnt=False,
+    config_file_path="resources/mapping_configuration_files/"
+):
+    """Detects the format of the input data, determining the closest match with
+    a proportion of overlap is above threshold (default .25). If no formats
+    overlap more than the threshold, return None.
 
     Args:
-        output_format (string): The output format, needed for loading the configuration files to test each
-        data (Pandas DataFrame): The data being processed where we wish to determine the most likely format
+        output_format (string): The output format, needed for loading the
+            configuration files to test each. Can also take a value of 'all'
+            which tests everything.
+        data (Pandas DataFrame): The data being processed where we wish to
+            determine the most likely format
 
     Returns:
         str: the best matching format for the input data
 
     Examples:
     Can determine the format of a data file:
-    >>> detect_format("InSilicoVA", flexible_read("resources/sample_data/2016WHO_mock_data_1.csv"))
+    >>> detect_format(
+          "InsillicoVA", flexible_read("resources/sample_data/2016WHO_mock_data_1.csv")
+        )
     '2016WHOv141'
     """
 
     # Go through all of the SUPPORTED_INPUTS and for each determine
     # the proportion of inputs that are present in the input data and
     # choose the best match (the one with the highest proportion)
-
-    from pycrossva.transform import SUPPORTED_INPUTS
+    from pycrossva.transform import SUPPORTED_INPUTS, SUPPORTED_OUTPUTS
     from pycrossva.configuration import Configuration, CrossVA
-
-    #config_file_path = os.path.join(os.path.split(__file__)[0], "resources/mapping_configuration_files/")
-    config_file_path = "resources/mapping_configuration_files/"
 
     proportions = {}
 
-    for input_format in SUPPORTED_INPUTS:
-        translation_file = (f"{config_file_path}{input_format}_to_{output_format}.csv")
-        if os.path.isfile(translation_file):
+    # if no output format specified, use all possible translation filepaths
+    if output_format == "all":
+        translations = [
+            (f"{config_file_path}{x}_to_{y}.csv")
+            for x in SUPPORTED_INPUTS for y in SUPPORTED_OUTPUTS
+        ]
+    else:
+        translations = [
+            (f"{config_file_path}{x}_to_{output_format}.csv")
+            for x in SUPPORTED_INPUTS
+        ]
 
+    for translation_file in translations:
+        # extract out the translation type from the filepath
+        input_format = re.sub(config_file_path, "", translation_file)
+        input_format = re.sub("_.*$", "", input_format)
+
+        if os.path.isfile(translation_file):
             # Get a list of the column IDs of the data file that are in the mapping file
             mapping_data = pd.read_csv(translation_file)
-            mapping_config = Configuration(config_data=mapping_data, process_strings=False)
+            mapping_config = Configuration(
+                config_data=mapping_data, process_strings=False
+            )
             cross_va = CrossVA(data, mapping_config)
             mapped_data_column_ids = cross_va.data.columns
 
@@ -161,6 +183,7 @@ def detect_format(output_format, data, threshold=.25, prnt=False):
     # Return the supported input that has the highest proportion
     if len(proportions) > 0:
         return max(proportions, key=proportions.get)
+
 
 def english_relationship(rel):
     """Returns abbreviated relationship as full english phrase.
